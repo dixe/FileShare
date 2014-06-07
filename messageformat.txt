@@ -1,0 +1,24 @@
+inspired by html, can easy be change to include a newline between
+header and data
+
+Messaegs to the tracker has to be lower then 1 mb
+
+Register message format 
+Register \r\n
+json machine object
+
+Refresh message format
+Refresh \r\n
+
+Tracker response message format
+messagetype OK \r\n
+json machine object array
+
+
+Error messages format
+ERROR errornum: desription \r\n
+
+
+Error numbers
+1 - unknown command
+

@@ -1,0 +1,14 @@
+This is the tracker in my local network file sharing program
+
+This tracker is used to keep track of online clients and there names
+
+Format is json, see jsonformat.txt
+
+
+
+FUNCTIONS:
+register. client tell the tracker it is online  
+
+refresh. if client sent refresh, tracker ping all know online machines and respond with a fresh list of online machines
+
+

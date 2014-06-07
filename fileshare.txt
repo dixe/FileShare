@@ -1,0 +1,22 @@
+Setup client with simple gui - first cli
+
+How it works idea 1:
+
+Connect to main machine, like a tracker
+
+main machine knows all other online machines - could give machines names
+
+list online machines in gui
+
+online machines listen for connections
+
+when sending files the listining machines start to recive the file
+
+
+
+
+
+sending format:
+
+
+

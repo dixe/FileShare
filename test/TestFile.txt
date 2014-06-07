@@ -1,0 +1,3 @@
+Register
+{"ip": "localhost4", "name": "testmachine","port": 80 }
+
