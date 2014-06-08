@@ -1,9 +1,9 @@
 First line
 
 machine object
-    machineip - ip of the machine
-    machinename - name to be display with ip
-    machineport - port listing on default 80
+    ip - ip of the machine
+    name - name to be display with ip
+    port - port listing on default 80
 
 
 Tracker respond with a array of machine objects, all the online macines
