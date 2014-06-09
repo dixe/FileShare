@@ -73,11 +73,11 @@ class ClientGUI(tk.Tk):
 ##BUTTONS##
         # create register button
         self.registerbutton = tk.Button(self.buttonFrame,text="Register", command=self.register)
-        self.registerbutton.grid(row=0,sticky='W',pady = 10)
+        self.registerbutton.grid(row=0,sticky='W',pady=40)
 
         # create a send button
         self.sendbutton = tk.Button(self.buttonFrame,text="Send", command=self.send)
-        self.sendbutton.grid(row=1, sticky='W',pady = 10)
+        self.sendbutton.grid(row=1, sticky='W',pady = 40)
 
 
     # get selected name from list and send selected file
