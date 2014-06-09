@@ -54,16 +54,16 @@ class RequestHandler(threading.Thread):
         #read request
         request = util.readRequest(self.conn)
         # parse request 
-        message = util.parseRequest(request)
+        message = util.parseMessage(request)
 
         # if register, add to registation file
-
+        print message
         if message[0] == "Register":
             # update register object
-            registered =self.jsonRegister.register(message[1])
+            registered = self.jsonRegister.register(message[1])
             
             # respond with the register list
-            response = "Register OK\r\n"
+            response = "Register\r\n"
             response += registered
             print "sending"
             self.conn.send(response)

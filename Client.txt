@@ -1,5 +1,10 @@
-
-
+Client class:
+ip - own ip
+name - own name
+port - port listing on
+tracker - used tracker
+jsonReg - jsonobject of registered machines, from tracker
+threadlist - list of ongoing thread
 
 
 

@@ -1,0 +1,17 @@
+See mockup
+
+list of online persons, use register to get list
+
+
+to send file, select name from list
+select
+
+
+Widgets:
+mainframe, holds every other widget on main page
+
+OnlineFrame, in mainframe, holds the list of other online clients
+
+register button, in mainframe, register with the tracker
+
+refresh button, in mainframe, refresh with the tracker

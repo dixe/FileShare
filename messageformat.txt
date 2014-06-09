@@ -1,6 +1,6 @@
 inspired by html, can easy be change to include a newline between
 header and data
-
+CLIENT - TRACKER
 Messaegs to the tracker has to be lower then 1 mb
 
 Register message format 
@@ -11,14 +11,34 @@ Refresh message format
 Refresh \r\n
 
 Tracker response message format
-messagetype OK \r\n
+messagetype \r\n
 json machine object array
 
 
+CLIENT - CLIENT
+
+Send file request format - from sender
+Send \r\n
+filename filesize
+
+recive file response format - from reciver
+Send \r\n
+
+Send file format - from sender
+filename filesize \r\n
+filedate
+
+
+
+
+ERRORS
+
 Error messages format
-ERROR errornum: desription \r\n
+ERROR + errornun desription \r\n
 
 
 Error numbers
 1 - unknown command
+2 - to big request size
+3 - could not connect
 

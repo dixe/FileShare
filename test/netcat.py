@@ -27,10 +27,5 @@ with open(path, 'rb') as f:
     data = f.read()
     sock.send(data)
 
-data = ' '
-while len(data) > 0:
-    data = sock.recv(80)
-    print data
-    if data.strip() == '':
-        break
+
 sock.close()
