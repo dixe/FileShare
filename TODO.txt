@@ -1,0 +1,2 @@
+TRACKER:
+Handle tracker error when invalid json in register
