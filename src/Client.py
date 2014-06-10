@@ -24,7 +24,6 @@ class ListenerRequestHandler(threading.Thread):
         message = util.parseMessageClient(request)
         # get message type
         if message[0] == "Send":
-            print message
             filename = message[1].split(' ')[0]
             filesize = int(message[1].split(' ')[1])
             # ask user whether to recive or not
@@ -37,7 +36,6 @@ class ListenerRequestHandler(threading.Thread):
                 # send that we want to recive
                 self.conn.send("Send\r\n")
                 # listen for file data
-                print "here"
                 d = ' '
                 data = ''
                 while len(d) >0:
@@ -58,9 +56,9 @@ class Listener(threading.Thread):
     """Class that listen on a port for requests from other clients"""
     def __init__(self, host, port):
         threading.Thread.__init__(self)
-        self._stop = threading.Event()
         self.host = host
         self.port = port
+
 
     def run(self):
         print "Listener run ip: " + self.host + " port: " + str(self.port)
@@ -87,6 +85,7 @@ class Client():
         self.port = port
         self.tracker = tracker
         self.threadlist = []
+        self.jsonReg = [] # emty jsonReg
         self.ip = ([(s.connect(('8.8.8.8', port)), s.getsockname()[0], s.close())
                     for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
 
@@ -98,11 +97,11 @@ class Client():
         # send request to tracker
         response = util.sendRequest(registerRequest,self.tracker)
         # parse response
+
         parsed = util.parseMessageTracker(response)
         #
         if parsed[0] == 'Register':
             self.jsonReg = json.loads(parsed[1])
-            print self.jsonReg
         else:
             #error
             print "ERROR" + str(parsed)

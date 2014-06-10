@@ -40,7 +40,7 @@ class ClientGUI(tk.Tk):
             except:
                 return False
             # create client
-            self.client = Client.Client(clientJson['name'], clientJson['port'], clientJson['tracker'])
+            self.client = Client.Client(clientJson['name'], clientJson['port'], (clientJson['tracker']['ip'],clientJson['tracker']['port']))
 
             return True
         return False
@@ -61,31 +61,48 @@ class ClientGUI(tk.Tk):
         self.onlineFrame = tk.Frame(self.mainFrame, width = self.onlineFW, height = self.onlineFH, background='white')
         self.onlineFrame.grid_propagate(False)
         self.onlineFrame.grid(row = 0, column = 0) # set in upper left corner
-
         # button frame
         self.buttonFrame = tk.Frame(self.mainFrame, width = self.buttonFW, height = self.buttonFH, background='black')
         self.buttonFrame.grid_propagate(False)
         self.buttonFrame.grid(row = 0, column = 1)
 ##ONLINE##
-
-
+        self.onlinelistBox = tk.Listbox(self.onlineFrame, selectmode = 'single',width = 30)
+        self.onlinelistBox.grid(sticky = "E",)#pack(expand=1, fill='both')
+        self.refreshOnlineList()
 
 ##BUTTONS##
         # create register button
         self.registerbutton = tk.Button(self.buttonFrame,text="Register", command=self.register)
         self.registerbutton.grid(row=0,sticky='W',pady=40)
 
-        # create a send button
+        # cReate A Send Button
         self.sendbutton = tk.Button(self.buttonFrame,text="Send", command=self.send)
         self.sendbutton.grid(row=1, sticky='W',pady = 40)
 
 
-    # get selected name from list and send selected file
+    def refreshOnlineList(self):
+        #clear list
+        self.onlinelistBox.delete(0,'end')
+        # for every json client in self.client
+        for client in self.client.jsonReg:
+            clientString = "Name: " + str(client['name']) + ", ip: " +  str(client['ip']) + ', port: ' + str(client['port'])
+            self.onlinelistBox.insert('end',clientString)
+
+
+    # send file to selected client
     def send(self):
-        print "TODO send"
+        # get selected client
+        selected = self.onlinelistBox.curselection()
+        if len(selected) <1:
+            return
+        client = self.onlinelistBox.get(selected[0])
 
     def register(self):
-        print "TODO register"
+        self.client.register()
+        print "Jsonreg: " +str(self.client.jsonReg)
+        self.refreshOnlineList()
+
+
 
 
 # start the program
