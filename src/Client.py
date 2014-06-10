@@ -3,7 +3,7 @@ import utils as util
 import json
 import threading
 import clientInput as ci
-
+import os
 gui = False
 
 
@@ -40,10 +40,11 @@ class ListenerRequestHandler(threading.Thread):
                 data = ''
                 while len(d) >0:
                     d = self.conn.recv(128)
-                    d +=data
+                    data += d
 
                 # write file data to new file
                 with open(filename+"OUT",'w') as f:
+                    print "writing data: " + data
                     f.write(data)
                 print "Saved " + filename+"OUT"
         else:
@@ -114,14 +115,15 @@ class Client():
         self.threadlist.append(listener)
 
     # send file
-    def send(self, filename, host, port):
+    def send(self, filepath, host, port):
         # assume file can be in memory
-        with open(filename,'r') as f:
+        with open(filepath,'r') as f:
             filedata =f.read()
         print "sending"
+        filepath_name = filepath.rsplit(os.sep,1)
+        # select the filename, if len = 0, then filepath_name = filename
+        filename = filepath_name[len(filepath_name)-1]
         util.sendFile(filename, filedata, host, port)
-
-
 
 
     def changeName(self, name):

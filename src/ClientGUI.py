@@ -1,6 +1,7 @@
 #!usr/bin/python
 import Client
 import Tkinter as tk
+import tkFileDialog as tkfile
 import json
 import os
 
@@ -56,21 +57,23 @@ class ClientGUI(tk.Tk):
         # set to use width and height
         self.mainFrame.grid_propagate(False)
         self.mainFrame.grid()
-##FRAMES##
+    ##FRAMES##
         # the frame to hold online persons
         self.onlineFrame = tk.Frame(self.mainFrame, width = self.onlineFW, height = self.onlineFH, background='white')
         self.onlineFrame.grid_propagate(False)
         self.onlineFrame.grid(row = 0, column = 0) # set in upper left corner
+
         # button frame
         self.buttonFrame = tk.Frame(self.mainFrame, width = self.buttonFW, height = self.buttonFH, background='black')
         self.buttonFrame.grid_propagate(False)
         self.buttonFrame.grid(row = 0, column = 1)
-##ONLINE##
+
+    ##ONLINE LIST##
         self.onlinelistBox = tk.Listbox(self.onlineFrame, selectmode = 'single',width = 30)
         self.onlinelistBox.grid(sticky = "E",)#pack(expand=1, fill='both')
         self.refreshOnlineList()
 
-##BUTTONS##
+    ##BUTTONS##
         # create register button
         self.registerbutton = tk.Button(self.buttonFrame,text="Register", command=self.register)
         self.registerbutton.grid(row=0,sticky='W',pady=40)
@@ -94,8 +97,13 @@ class ClientGUI(tk.Tk):
         # get selected client
         selected = self.onlinelistBox.curselection()
         if len(selected) <1:
+            print "Select client to send file to"
             return
-        client = self.onlinelistBox.get(selected[0])
+        sendClient = self.client.jsonReg[int(selected[0])]
+        # select file
+        filepath = tkfile.askopenfilename()
+        self.client.send(filepath, sendClient['ip'],sendClient['port'])
+
 
     def register(self):
         self.client.register()

@@ -69,6 +69,7 @@ def sendRequest(request, tracker):
 
 # given file data and a host and port, try to send filedata
 def sendFile(filename, filedata, host, port):
+    print filename
     print "connection"
     conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -81,13 +82,9 @@ def sendFile(filename, filedata, host, port):
     response = conn.recv(128)
     send = False
     if response.strip() == "Send":
-
         send = True
-        #send file
-        sendData = filename + " " + str(len(filedata)) +"\r\n|"
-        sendData += filedata
-        print "send"
-        conn.send(sendData)
+        #send filedata
+        conn.send(filedata)
     conn.close()
     return send
 

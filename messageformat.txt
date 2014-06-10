@@ -25,8 +25,7 @@ recive file response format - from reciver
 Send \r\n
 
 Send file format - from sender
-filename filesize \r\n
-filedate
+filedata
 
 
 
