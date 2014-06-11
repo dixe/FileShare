@@ -16,12 +16,13 @@ class ClientGUI(tk.Tk):
         self.onlineFW = 300
         self.buttonFH = 300
         self.buttonFW = 100
+        self.client = None
 
-        if not self.loadClient():
+        if self.loadClient():
+            # client loaded and ready to listen
+            self.client.listen()
+        else:
             self.setupClient()
-
-        # start client listen
-        self.client.listen()
 
         # set client to use GUI
         gui = True
@@ -32,8 +33,8 @@ class ClientGUI(tk.Tk):
     # try to load existing client data, true if success false if no existing was found
     def loadClient(self):
         # client is stores in a txt file, with name clientdata
-        if os.path.isfile("clientdata"):
-            with open("clientdata","r") as f:
+        if os.path.isfile(".client"):
+            with open(".client","r") as f:
                 clientdata = f.read()
             # if json is malformed, return false
             try:
@@ -41,7 +42,7 @@ class ClientGUI(tk.Tk):
             except:
                 return False
             # create client
-            self.client = Client.Client(clientJson['name'], clientJson['port'], (clientJson['tracker']['ip'],clientJson['tracker']['port']))
+            self.client = Client.Client(clientJson['name'], clientJson['port'], (clientJson['tracker']['ip'],clientJson['tracker']['port']), True)
 
             return True
         return False
@@ -49,7 +50,78 @@ class ClientGUI(tk.Tk):
 
     def setupClient(self):
         # open widgets windows to initialize new client
+        # client setup Frame
+        self.clientWindow = tk.Toplevel()
+        self.clientWindow.grid()
+
+        # name field
+        self.namefield = tk.Entry(self.clientWindow)
+        self.namefield.delete(0,'end')
+        self.namefield.insert(0,'Your machine name')
+        self.namefield.grid(row=0,column =0)
+
+        self.portfield = tk.Entry(self.clientWindow)
+        self.portfield.delete(0,'end')
+        self.portfield.insert(0,'Your machine port')
+        self.portfield.grid(row=0,column =1)
+
+        # tracker ip
+        self.trackerfield = tk.Entry(self.clientWindow)
+        self.trackerfield.delete(0,'end')
+        self.trackerfield.insert(0,'Your tracker ip')
+        self.trackerfield.grid(row=1,column =0)
+
+        # tracker port
+        self.trackerportfield = tk.Entry(self.clientWindow)
+        self.trackerportfield.delete(0,'end')
+        self.trackerportfield.insert(0,'Your tracker port')
+        self.trackerportfield.grid(row=1,column =1)
+
+        # create button
+        self.createButton = tk.Button(self.clientWindow, text = "Create client", command=self.createClient)
+        self.createButton.grid()
+        # tmp
+
+
+    def createClient(self):
+        trackip = self.trackerfield.get()
+        trackport = self.trackerportfield.get()
+        name = self.namefield.get()
+        myport = self.portfield.get()
+
+        # test to see if they are valid
+        try:
+            trackport = int(trackport)
+            port = int(myport)
+        except:
+            print "port has to be int"
+            return
+
+        self.client = Client.Client(name, port ,(trackip, trackport))
+
+        self.startClient()
+        self.saveClient()
+        # destroy setup window
+        self.clientWindow.destroy()
+
+    def saveClient(self):
+        self.client.ip
+        saveString = """{\"ip\": \"%s\", \"name\": \"%s\", \"port\": %d,
+                    \"tracker\": {\"ip\": \"%s\", \"port\": %d}}""" % (self.client.ip, self.client.name,
+                                                                       self.client.port, self.client.tracker[0],
+                                                                       self.client.tracker[1])
+        with open(".client",'w+') as f:
+            f.write(saveString)
+
+    def startClient(self):
+        if not self.client is None:
+            self.client.listen()
+
+
+
+    def updateIP(self):
         print "TODO"
+        # update own client ip, to current
 
     def setupWidgets(self):
         # create a main frame for widgets
@@ -68,10 +140,12 @@ class ClientGUI(tk.Tk):
         self.buttonFrame.grid_propagate(False)
         self.buttonFrame.grid(row = 0, column = 1)
 
+
     ##ONLINE LIST##
         self.onlinelistBox = tk.Listbox(self.onlineFrame, selectmode = 'single',width = 30)
         self.onlinelistBox.grid(sticky = "E",)#pack(expand=1, fill='both')
-        self.refreshOnlineList()
+        if not self.client is None:
+            self.refreshOnlineList()
 
     ##BUTTONS##
         # create register button
@@ -106,6 +180,7 @@ class ClientGUI(tk.Tk):
 
 
     def register(self):
+        print "Register"
         self.client.register()
         print "Jsonreg: " +str(self.client.jsonReg)
         self.refreshOnlineList()

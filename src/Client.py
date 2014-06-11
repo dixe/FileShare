@@ -4,16 +4,15 @@ import json
 import threading
 import clientInput as ci
 import os
-gui = False
-
 
 class ListenerRequestHandler(threading.Thread):
     """Handle request to the client"""
 
-    def __init__(self, conn, address):
+    def __init__(self, conn, address, gui):
         threading.Thread.__init__(self)
         self.conn = conn
         self.address = address
+        self.gui = gui
 
 
     def run(self):
@@ -27,9 +26,10 @@ class ListenerRequestHandler(threading.Thread):
             filename = message[1].split(' ')[0]
             filesize = int(message[1].split(' ')[1])
             # ask user whether to recive or not
-            if not gui:
+            if not self.gui:
                 recive = ci.reciveFileCli(filename, filesize)
             else:
+                print "GUICODE\n\n\n"
                 recive = ci.reciveFileGui(filename, filesize)
 
             if recive:
@@ -55,10 +55,11 @@ class ListenerRequestHandler(threading.Thread):
 
 class Listener(threading.Thread):
     """Class that listen on a port for requests from other clients"""
-    def __init__(self, host, port):
+    def __init__(self, host, port, gui = False):
         threading.Thread.__init__(self)
         self.host = host
         self.port = port
+        self.gui = gui
 
 
     def run(self):
@@ -75,13 +76,13 @@ class Listener(threading.Thread):
             # accept socket from world
             (conn,address) = listenersocket.accept()
             # create and start request handler
-            reqhandler = ListenerRequestHandler(conn,address)
+            reqhandler = ListenerRequestHandler(conn,address, self.gui)
             reqhandler.setDaemon(True)
             reqhandler.start()
 
 
 class Client():
-    def __init__(self, name, port, tracker):
+    def __init__(self, name, port, tracker, gui = False):
         self.name = name
         self.port = port
         self.tracker = tracker
@@ -89,6 +90,7 @@ class Client():
         self.jsonReg = [] # emty jsonReg
         self.ip = ([(s.connect(('8.8.8.8', port)), s.getsockname()[0], s.close())
                     for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
+        self.gui = gui
 
     def register(self):
         # create the request message
@@ -98,7 +100,6 @@ class Client():
         # send request to tracker
         response = util.sendRequest(registerRequest,self.tracker)
         # parse response
-
         parsed = util.parseMessageTracker(response)
         #
         if parsed[0] == 'Register':
@@ -109,7 +110,7 @@ class Client():
 
     # start to listen for other clienets that want to send communicate
     def listen(self):
-        listener = Listener(self.ip, self.port)
+        listener = Listener(self.ip, self.port, self.gui)
         listener.setDaemon(True)
         listener.start()
         self.threadlist.append(listener)
