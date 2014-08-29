@@ -19,21 +19,21 @@ class ListenerRequestHandler(threading.Thread):
     def run(self):
         #read request
         request = util.readRequest(self.conn)
-
         # parse request
         message = util.parseMessageClient(request)
         # get message type
         if message[0] == "Send":
             filename = message[1].split(' ')[0]
-            filesize = int(message[1].split(' ')[1])
+            filesize = int(message[1].split(' ')[-1])
             # ask user whether to recive or not
             if not self.gui:
                 recive = ci.reciveFileCli(filename, filesize)
             else:
-                recive = ci.reciveFileGui(filename, filesize)
+                recive = ci.reciveFileCli(filename, filesize)
 
             if recive:
-                # send that we want to recive
+                # message that we want the file
+                # and should send it
                 self.conn.send("Send\r\n")
                 # listen for file data
                 d = ' '

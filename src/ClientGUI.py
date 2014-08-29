@@ -158,9 +158,6 @@ class ClientGUI(tk.Tk):
 
         self.setupGUI()
 
-
-
-
     def setupWidgets(self):
         # create a main frame for widgets
         self.mainFrame = tk.Frame(self, width = self.width, height = self.height)

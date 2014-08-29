@@ -1,5 +1,6 @@
 """ This is ment to be used to handle gui and cli input, by switching functions around."""
 import Tkinter as tk
+
 # return true if we want file, false if not
 def reciveFileCli(filename, filesize):
     # as if user want toa get file
@@ -9,9 +10,6 @@ def reciveFileCli(filename, filesize):
             return True
         if answer is 'n':
             return False
-
-
-
 
 def nofun(reciver):
     reciver.recive = False
