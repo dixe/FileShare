@@ -17,6 +17,8 @@ class ClientGUI(tk.Tk):
         self.buttonFH = 300
         self.buttonFW = 100
         self.client = None
+        self.option = ["Update Tracker", "Update Client"]
+
 
         if self.loadClient():
             # client loaded and ready to listen
@@ -48,37 +50,63 @@ class ClientGUI(tk.Tk):
         return False
 
 
-    def setupClient(self):
+    def setupGUI(self):
         # open widgets windows to initialize new client
         # client setup Frame
         self.clientWindow = tk.Toplevel()
         self.clientWindow.grid()
 
         # name field
+        if self.client != None:
+            name = self.client.name
+            port = str(self.client.port)
+            trackport = self.client.tracker[1]
+            trackip = self.client.tracker[0]
+
+        else:
+            name = 'Your machine name'
+            port = 'Your machine port'
+            trackip = 'Your tracker ip'
+            trackport ='Your tracker port'
+
+        #own machine name
+        self.nameLabel= tk.Label(self.clientWindow, text = "Machine name")
+        self.nameLabel.grid(row=0,column =0)
+
         self.namefield = tk.Entry(self.clientWindow)
         self.namefield.delete(0,'end')
-        self.namefield.insert(0,'Your machine name')
-        self.namefield.grid(row=0,column =0)
+        self.namefield.insert(0,name)
+        self.namefield.grid(row=0,column =1)
+
+        #own port
+        self.portLabel= tk.Label(self.clientWindow, text = "Machine port")
+        self.portLabel.grid(row=0,column =2)
 
         self.portfield = tk.Entry(self.clientWindow)
         self.portfield.delete(0,'end')
-        self.portfield.insert(0,'Your machine port')
-        self.portfield.grid(row=0,column =1)
+        self.portfield.insert(0,port)
+        self.portfield.grid(row=0,column =3)
 
         # tracker ip
+        self.tracknameLabel= tk.Label(self.clientWindow, text = "Tracker ip")
+        self.tracknameLabel.grid(row=1,column =0)
+
         self.trackerfield = tk.Entry(self.clientWindow)
         self.trackerfield.delete(0,'end')
-        self.trackerfield.insert(0,'Your tracker ip')
-        self.trackerfield.grid(row=1,column =0)
+        self.trackerfield.insert(0,trackip)
+        self.trackerfield.grid(row=1,column =1)
 
         # tracker port
+        self.trackportLabel= tk.Label(self.clientWindow, text = "Tracker port")
+        self.trackportLabel.grid(row=1,column =2)
+
         self.trackerportfield = tk.Entry(self.clientWindow)
         self.trackerportfield.delete(0,'end')
-        self.trackerportfield.insert(0,'Your tracker port')
-        self.trackerportfield.grid(row=1,column =1)
+        self.trackerportfield.insert(0,trackport)
+        self.trackerportfield.grid(row=1,column =3)
 
         # create button
-        self.createButton = tk.Button(self.clientWindow, text = "Create client", command=self.createClient)
+        self.createButton = tk.Button(self.clientWindow, text = "Update client", command=self.createClient)
         self.createButton.grid()
         # tmp
 
@@ -97,7 +125,7 @@ class ClientGUI(tk.Tk):
             print "port has to be int"
             return
 
-        self.client = Client.Client(name, port ,(trackip, trackport))
+        self.client = Client.Client(name, port ,(trackip, trackport), True)
 
         self.startClient()
         self.saveClient()
@@ -118,10 +146,20 @@ class ClientGUI(tk.Tk):
             self.client.listen()
 
 
+    def updateClient(self):
+        # stop client listener
+        listener = self.client.threads['listener']
+        print listener
+        if listener == None:
+            self.setupGUI()
+            return
+        listener.stop()
+        listener.join()
 
-    def updateIP(self):
-        print "TODO"
-        # update own client ip, to current
+        self.setupGUI()
+
+
+
 
     def setupWidgets(self):
         # create a main frame for widgets
@@ -147,6 +185,10 @@ class ClientGUI(tk.Tk):
         if not self.client is None:
             self.refreshOnlineList()
 
+    ##OPTIONMENU##
+        self.menuBar = tk.Menu(self.mainFrame)
+        self.menuBar.add_command(label = "Update info", command = self.updateClient)
+        self.config(menu = self.menuBar)
     ##BUTTONS##
         # create register button
         self.registerbutton = tk.Button(self.buttonFrame,text="Register", command=self.register)
@@ -155,6 +197,8 @@ class ClientGUI(tk.Tk):
         # cReate A Send Button
         self.sendbutton = tk.Button(self.buttonFrame,text="Send", command=self.send)
         self.sendbutton.grid(row=1, sticky='W',pady = 40)
+
+
 
 
     def refreshOnlineList(self):

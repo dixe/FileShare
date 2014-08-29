@@ -14,12 +14,10 @@ def reciveFileCli(filename, filesize):
 
 
 def nofun(reciver):
-    print "no code"
     reciver.recive = False
     reciver.ispressed = True
 
 def yesfun(reciver):
-    print "yes code"
     reciver.recive = True
     reciver.ispressed = True
 

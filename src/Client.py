@@ -4,6 +4,7 @@ import json
 import threading
 import clientInput as ci
 import os
+import sys
 
 class ListenerRequestHandler(threading.Thread):
     """Handle request to the client"""
@@ -29,7 +30,6 @@ class ListenerRequestHandler(threading.Thread):
             if not self.gui:
                 recive = ci.reciveFileCli(filename, filesize)
             else:
-                print "GUICODE\n\n\n"
                 recive = ci.reciveFileGui(filename, filesize)
 
             if recive:
@@ -56,29 +56,42 @@ class ListenerRequestHandler(threading.Thread):
 class Listener(threading.Thread):
     """Class that listen on a port for requests from other clients"""
     def __init__(self, host, port, gui = False):
-        threading.Thread.__init__(self)
+        super(Listener,self).__init__()
         self.host = host
         self.port = port
         self.gui = gui
+        self.stopped = False
+
+    def stop(self):
+        # stop socket and closes thread
+        self.listenersocket.shutdown(socket.SHUT_RDWR)
+        self.listenersocket.close()
+        self.stopped = True
+        return
 
 
     def run(self):
         print "Listener run ip: " + self.host + " port: " + str(self.port)
-        listenersocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        listenersocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.listenersocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.listenersocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # bind to anyone
 
-        listenersocket.bind((self.host,self.port))
+        self.listenersocket.bind((self.host,self.port))
 
-        listenersocket.listen(5)
+        self.listenersocket.listen(5)
         run = True
         while run:
             # accept socket from world
-            (conn,address) = listenersocket.accept()
+            (conn,address) = self.listenersocket.accept()
+            if self.stopped:
+                # stop the thread
+                return
             # create and start request handler
             reqhandler = ListenerRequestHandler(conn,address, self.gui)
-            reqhandler.setDaemon(True)
             reqhandler.start()
+
+
+
 
 
 class Client():
@@ -86,7 +99,7 @@ class Client():
         self.name = name
         self.port = port
         self.tracker = tracker
-        self.threadlist = []
+        self.threads = {'listener': None}
         self.jsonReg = [] # emty jsonReg
         self.ip = ([(s.connect(('8.8.8.8', port)), s.getsockname()[0], s.close())
                     for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
@@ -113,7 +126,8 @@ class Client():
         listener = Listener(self.ip, self.port, self.gui)
         listener.setDaemon(True)
         listener.start()
-        self.threadlist.append(listener)
+        self.threads['listener'] = listener
+
 
     # send file
     def send(self, filepath, host, port):
@@ -142,10 +156,19 @@ class Client():
 
 #start the program
 if __name__ =="__main__":
-    client = Client("name", 3001, ("192.168.1.6", 3000))
+    if(len(sys.argv) < 3):
+        print "Usage python client.py trackerip trackerport"
+        exit()
+
+    
+    print sys.argv[1]
+    print sys.argv[2]
+
+    tracker = ((sys.argv[1], sys.argv[2]))
+    client = Client("name", 3001, tracker)
 #    client.register()
     client.listen()
-    client2 = Client("name", 3002, ("192.168.1.6", 3000))
+    client2 = Client("name", 3002, tracker)
     client2.send('myfile',"192.168.1.129", 3001)
     while True:
         # makes test clients run
